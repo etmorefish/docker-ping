@@ -3,7 +3,8 @@ name: build-go-binary
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - '*'
 
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
@@ -12,7 +13,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -24,9 +26,14 @@ jobs:
       run: go build -v ./...
 
       # 使用 goreleaser 进行生成多平台代码并且上传到github release进行发布
-    - name: Create release on GitHub
-      uses: docker://goreleaser/goreleaser:latest
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v4
       with:
-        args: release
+        # either 'goreleaser' (default) or 'goreleaser-pro'
+        distribution: goreleaser
+        version: latest
+        args: release --clean
       env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
+        # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
