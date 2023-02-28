@@ -21,4 +21,4 @@ FROM scratch
 COPY --from=builder /app/docker-ping /
 # USER nonroot:nonroot
 EXPOSE 8080
-CMD ["/app/docker-ping"]
+CMD ["/docker-ping"]
